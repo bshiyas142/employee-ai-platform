@@ -53,5 +53,5 @@ class EmployeeResponse(BaseModel):
     hr_id: Optional[str] = None
     role: Role
     designation: Designation
-    Employment_status: EmploymentStatus
+    employment_status: EmploymentStatus
 
