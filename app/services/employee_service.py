@@ -1,9 +1,10 @@
 
 
+from app.exceptions.employee_exceptions import EmployeeNotFoundException
 from app.models.employee import Employee
 
 from app.repositories.employee_repository import EmployeeRepository
-from app.schemas.employee_schema import EmployeeCreateRequest, EmploymentStatus, EmployeeResponse
+from app.schemas.employee_schema import EmployeeCreateRequest, EmployeeUpdateRequest, EmploymentStatus, EmployeeResponse
 
 
 class EmployeeService:
@@ -12,7 +13,7 @@ class EmployeeService:
 
     def create_employee(self, employee_request: EmployeeCreateRequest):
         employee = Employee(
-            employee_id="EMP000001",
+            employee_id=self.get_last_employee_id(),
             first_name=employee_request.first_name,
             last_name=employee_request.last_name,
             email=employee_request.email,
@@ -48,9 +49,39 @@ class EmployeeService:
     def get_employee(self, employee_id: str) -> EmployeeResponse:
         employee = self.employee_repository.find_by_id(employee_id)
         if employee is None:
-            raise ValueError(f"Employee with ID {employee_id} not found")
+            raise EmployeeNotFoundException(employee_id)
         return self._to_response(employee)
 
     def get_all_employees(self) -> list[EmployeeResponse]:
         employees = self.employee_repository.find_all()
-        return [self._to_response(employee) for employee in employees]
+        return [
+            self._to_response(employee)
+            for employee in employees
+         ]
+
+    def update_employee(self, employee_id: str, employee_request: EmployeeUpdateRequest) -> EmployeeResponse:
+        employee = self.employee_repository.find_by_id(employee_id)
+        if employee is None:
+            raise ValueError(f"Employee with ID {employee_id} not found")
+
+        update_data = employee_request.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(employee, field, value)
+
+        self.employee_repository.update(employee)
+        return self._to_response(employee)
+
+    def delete_employee(self, employee_id: str):
+        employee = self.employee_repository.find_by_id(employee_id)
+        if employee is None:
+            raise EmployeeNotFoundException(employee_id)
+        employee.employment_status = EmploymentStatus.TERMINATED
+        self.employee_repository.update(employee)
+
+    def get_last_employee_id(self) -> str:
+        last_employee_id = self.employee_repository.get_last_employee_id()
+        if last_employee_id is None:
+            return "EMP000001"
+        number = int(last_employee_id.replace("EMP", ""))
+        number += 1
+        return f"EMP{number:06d}"

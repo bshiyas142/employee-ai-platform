@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.schemas.employee_schema import EmployeeCreateRequest, EmployeeResponse
+from app.schemas.employee_schema import EmployeeCreateRequest, EmployeeResponse, EmployeeUpdateRequest
 from app.services.employee_service import EmployeeService
 
 router = APIRouter(prefix="/employees", tags=["Employees"])
@@ -19,3 +19,13 @@ def get_employee(employee_id: str):
 @router.get("", response_model=list[EmployeeResponse])
 def get_all_employees():
     return employee_service.get_all_employees()
+
+@router.patch("/{employee_id}", response_model=EmployeeResponse)
+def update_employee(employee_id: str, employee_request: EmployeeUpdateRequest):
+    return employee_service.update_employee(employee_id, employee_request)
+
+
+@router.delete("/{employee_id}", response_model=dict)
+def delete_employee(employee_id: str):
+    employee_service.delete_employee(employee_id)
+    return {"message": f"Employee with ID {employee_id} has been terminated."}

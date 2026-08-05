@@ -55,3 +55,17 @@ class EmployeeResponse(BaseModel):
     designation: Designation
     employment_status: EmploymentStatus
 
+
+class EmployeeUpdateRequest(BaseModel):
+    first_name: Optional[str] = Field(None, min_length=2, max_length=50, description="First name of the employee")
+    last_name: Optional[str] = Field(None, max_length=50, description="Last name of the employee")
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    date_Of_joining: Optional[date] = None
+    department_id: Optional[str] = None
+    manager_id: Optional[str] = None
+    hr_id: Optional[str] = None
+    role: Optional[Role] = None
+    designation: Optional[Designation] = None
+    employment_status: Optional[EmploymentStatus] = None
+

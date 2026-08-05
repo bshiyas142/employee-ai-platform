@@ -1,21 +1,23 @@
 import datetime
 from typing import Optional
-
-from pydantic import BaseModel
+from sqlalchemy import Column, String, Date, Enum
+from app.database.database import Base
 
 
 from app.schemas.employee_schema import Designation, EmploymentStatus, Role
 
-class Employee(BaseModel):
-    employee_id: str
-    first_name: str
-    last_name: Optional[str] = None
-    email: Optional[str] = None
-    phone_number: Optional[str] = None
-    date_Of_joining: datetime.date
-    department_id: str
-    manager_id: Optional[str] = None
-    hr_id: Optional[str] = None
-    role: Role
-    designation: Designation
-    employment_status: EmploymentStatus
+class Employee(Base):
+    __tablename__ = "employees"
+
+    employee_id  =  Column(String, primary_key=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=True)
+    email = Column(String, nullable=True)
+    phone_number = Column(String, nullable=True)
+    date_Of_joining = Column(Date, nullable=False)
+    department_id = Column(String, nullable=False)
+    manager_id = Column(String, nullable=True)
+    hr_id = Column(String, nullable=True)
+    role = Column(Enum(Role), nullable=False)
+    designation = Column(Enum(Designation), nullable=False)
+    employment_status = Column(Enum(EmploymentStatus), nullable=False)
