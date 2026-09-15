@@ -29,3 +29,7 @@ class EmployeeRepository:
     def get_last_employee_id(self):
         last_employee = self.db.query(Employee).order_by(Employee.employee_id.desc()).first()
         return last_employee.employee_id if last_employee else None
+
+
+    def get_employees_by_department(self, department_id: str):
+        return self.db.query(Employee).filter(Employee.department_id == department_id, Employee.employment_status != EmploymentStatus.TERMINATED).all()

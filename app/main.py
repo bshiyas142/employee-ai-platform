@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.ai import ai_router
 from app.exceptions.global_exception_handler import register_global_exception_handlers
 from app.routers.employee_router import router as employee_router
 from app.database.database import Base, engine
@@ -16,4 +17,5 @@ Base.metadata.create_all(bind=engine)
 
 
 app.include_router(employee_router)
+app.include_router(ai_router.router)
 
